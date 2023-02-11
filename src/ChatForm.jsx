@@ -1,112 +1,70 @@
 import React, { Component } from "react";
 import ChatBot from "react-simple-chatbot";
-import CustomOptionStep from "./CustomOptions";
-
-const options = [
-  {
-    value: "option1",
-    label: "Option 1",
-    height: "100",
-    width: "100",
-    src:
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=987&q=80"
-  },
-  {
-    value: "option2",
-    label: "Option 2",
-    height: "100",
-    width: "100",
-    src:
-      "https://images.unsplash.com/photo-1517832606299-7ae9b720a186?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=986&q=80"
-  }
-];
 
 // all available config props
 const config = {
   width: "400px",
-  height: "500px",
+  height: "400px",
   floating: true
 };
 
 const steps = [
+  // chatbot's question
   {
     id: "intro",
-    message: "Please select an option:",
-    trigger: "options"
-  },
-  {
-    id: "options",
-    component: <CustomOptionStep options={options} />,
-    asMessage: true,
-    trigger: "selected-option"
-  },
-  {
-    id: "selected-option",
-    message: `You selected: ${options.value}}`,
-    end: true
-  }
-];
-
-const triggerNextStep = () => {
-  console.log("this is triggerNextStep");
-};
-
-// const userPref, setUserPref = useState(); // ['green;,
-
-const steps2 = [
-  {
-    id: "intro",
-    message: "Hello what is your name?",
-    trigger: "user-name"
+    message: "what do you want to change?",
+    trigger: "changeCode"
   },
   // user's response
   {
-    id: "user-name",
+    id: "changeCode",
     user: true,
     trigger: ({ value, steps }) => {
-      // console.log("metadata.value: ", value, steps);
-      //console.log('input value: ', metadata.value);
-      return "greet";
+      return "desiredChange"; // this is the id of the next chat interaction
     }
   },
+
   // chatbot's response
   {
-    id: "greet",
+    id: "desiredChange",
     message: ({ previousValue, steps }) => {
       console.log("previousValue, steps: ", previousValue, steps);
-      return previousValue;
+      return (
+        "I have updated based on ",
+        previousValue,
+        "what more do you want to change?"
+      );
     },
-    trigger: "user-style"
+    trigger: "changeCode2" // go back to the chatbot's first question
   },
+
   // user's response
   {
-    id: "user-style",
+    id: "changeCode2",
     user: true,
-
-    trigger: "greet"
-  },
-  {
-    id: "options",
-    component: (
-      <CustomOptionStep options={options} triggerNextStep={triggerNextStep} />
-    ),
-    asMessage: true
-  },
-  {
-    id: "option1",
-    message: `You selected: option1`,
-    end: true
-  },
-  {
-    id: "option2",
-    message: `You selected: option2`,
-    end: true
+    trigger: ({ value, steps }) => {
+      return "desiredChange"; // go back to the where the user types in their response
+    }
   }
 ];
+
+// const handleSubmit = async (event) => {
+//   event.preventDefault();
+//   try {
+//     const response = await axios.post("http://localhost:8000/api/ui", {
+//       prompt: formValue,
+//     });
+//     setFormValue("");
+//     console.log("Success: ", response.data);
+//   } catch (error) {
+//     alert("Error: ", error);
+//     console.error("Error: ", error);
+//   }
+// };
 
 class ChatForm extends Component {
   render() {
-    return <ChatBot steps={steps2} {...config} />;
+    return <ChatBot steps={steps} {...config} />;
   }
 }
 
